@@ -132,29 +132,53 @@ class Block implements Cloneable{
 	}
 	
 	public Block leftShift() {
-		//TODO
-		return null;
+	    boolean[] result = new boolean[this.block.length];
+	    for (int i = 0; i < this.block.length - 1; i++) {
+	        result[i] = this.block[i + 1];
+	    }
+	    // Le bit le plus à droite du nouveau bloc est 0
+	    result[this.block.length - 1] = false;
+	    return new Block(result);
 	}
 	
 	public int rowValue() {
-		//TODO
-		return -1;
+	    return (this.block[0] ? 2 : 0) | (this.block[5] ? 1 : 0);
 	}
-	
+
 	public int columnValue() {
-		//TODO
-		return -1;
+	    return (this.block[1] ? 8 : 0) | (this.block[2] ? 4 : 0) | (this.block[3] ? 2 : 0) | (this.block[4] ? 1 : 0);
 	}
 	
 	public Block modularMultByX() {
-		//TODO
-		return null;
+	    // Effectuer un décalage gauche sur le bloc
+	    Block shiftedBlock = this.leftShift();
+	    
+	    // Appliquer une opération XOR avec la variable statique AESmod
+	    Block result = shiftedBlock.xOr(AESmodulo);
+	    
+	    return result;
 	}
-	
+
 	public Block modularMult(Block prod) {
-		//TODO
-		return null;
+	    Block result = new Block(this.block.length);
+	    
+	    for (int i = 0; i < this.block.length; i++) {
+
+	    	if (prod.block[i]) {
+	           
+	            Block shiftedBlock = this.modularMultByX();
+	         
+	            for (int j = 0; j < i; j++) {
+	                shiftedBlock = shiftedBlock.modularMultByX();
+	            }
+	 
+	            result = result.xOr(shiftedBlock);
+	        }
+	    }
+	    
+	    return result;
 	}
+
 	
 	public Block g(SBox sbox, Block rc) {
 		//TODO
